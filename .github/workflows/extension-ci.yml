@@ -1,0 +1,49 @@
+name: Extension CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-extension:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dev dependencies
+        run: |
+          npm init -y
+          npm install --save-dev eslint
+
+      - name: Create basic ESLint config
+        run: |
+          cat << 'EOF' > .eslintrc.json
+          {
+            "env": {
+              "browser": true,
+              "es2021": true
+            },
+            "extends": "eslint:recommended",
+            "parserOptions": {
+              "ecmaVersion": "latest",
+              "sourceType": "module"
+            },
+            "rules": {
+              "no-unused-vars": ["warn"],
+              "no-undef": ["warn"]
+            }
+          }
+          EOF
+
+      - name: Run ESLint on extension JS
+        run: |
+          npx eslint background.js options.js results.js || echo "Lint warnings/errors, da sistemare ma non blocco la build."

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>SPID Validator - Opzioni</title>
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 16px; }
+    label { display: block; margin: 8px 0 4px; }
+    input, select { width: 100%; max-width: 480px; padding: 4px; box-sizing: border-box; }
+    button { margin-top: 12px; padding: 6px 12px; }
+    #status { margin-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Opzioni SPID Certificate Validator</h1>
+
+  <label for="backendUrl">Backend URL (FastAPI)</label>
+  <input type="text" id="backendUrl" placeholder="https://spid-cert-validator-backend.onrender.com/validate-cert" />
+
+  <label for="sector">Settore SPID</label>
+  <select id="sector">
+    <option value="public">Public</option>
+    <option value="private">Private</option>
+  </select>
+
+  <button id="saveBtn">Salva</button>
+  <p id="status"></p>
+
+  <script src="options.js"></script>
+</body>
+</html>
