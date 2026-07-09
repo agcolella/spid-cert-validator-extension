@@ -22,3 +22,12 @@ h2 { margin-top: 16px; margin-bottom: 8px; }
   overflow: auto;
   font-size: 12px;
 }
+
+.expiry-warning {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+  background-color: #fff3cd; /* giallo warning */
+  color: #856404;
+  border: 1px solid #ffeeba;
+}

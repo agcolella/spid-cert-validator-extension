@@ -35,7 +35,28 @@ function renderProperties(result) {
   const subject = p.subject || {};
   const issuer = p.issuer || {};
 
+  // Calcolo scadenza imminente
+  let expiryWarningHtml = "";
+  if (p.validTo) {
+    const now = new Date();
+    const validToDate = new Date(p.validTo);
+    const diffMs = validToDate.getTime() - now.getTime();
+    const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+    if (diffDays > 0 && diffDays < 30) {
+      // meno di un mese alla scadenza
+      const daysRounded = Math.ceil(diffDays);
+      expiryWarningHtml = `
+        <p class="expiry-warning">
+          <strong>ATTENZIONE:</strong> il certificato scade tra ${daysRounded} giorno${daysRounded === 1 ? "" : "i"}.
+        </p>
+      `;
+    }
+  }
+
   propsEl.innerHTML = `
+    ${expiryWarningHtml}
+
     <h3>Subject</h3>
     <ul>
       <li><strong>CN</strong>: ${subject.commonName || "-"}</li>
@@ -75,7 +96,6 @@ function renderProperties(result) {
     </ul>
   `;
 }
-
 function renderDetails(result) {
   const detailsEl = document.getElementById("details");
   detailsEl.innerHTML = "";
