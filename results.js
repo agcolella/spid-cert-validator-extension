@@ -40,20 +40,29 @@ function renderProperties(result) {
   const subject = p.subject || {};
   const issuer = p.issuer || {};
 
-  // Calcolo scadenza imminente
+  // Calcolo scadenza imminente / scaduta
   let expiryWarningHtml = "";
+  let validToClass = "";
+
   if (p.validTo) {
     const now = new Date();
     const validToDate = new Date(p.validTo);
     const diffMs = validToDate.getTime() - now.getTime();
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
 
-    if (diffDays > 0 && diffDays < 30) {
-      // meno di un mese alla scadenza
+    if (diffDays <= 0) {
+      // già scaduto
+      validToClass = "validity-expired";
+      expiryWarningHtml = `
+        <p class="expiry-expired">
+          <strong>Certificato SCADUTO:</strong> la data di fine validità è già trascorsa.
+        </p>
+      `;
+    } else if (diffDays < 30) {
       const daysRounded = Math.ceil(diffDays);
       expiryWarningHtml = `
         <p class="expiry-warning">
-          <strong>ATTENZIONE:</strong> il certificato scade tra ${daysRounded} giorno${daysRounded === 1 ? "" : "i"}.
+          <strong>Scadenza imminente:</strong> il certificato scade tra ${daysRounded} giorno${daysRounded === 1 ? "" : "i"}.
         </p>
       `;
     }
@@ -85,7 +94,7 @@ function renderProperties(result) {
     <h3>Validity</h3>
     <ul>
       <li><strong>Valid From</strong>: ${p.validFrom || "-"}</li>
-      <li><strong>Valid To</strong>: ${p.validTo || "-"}</li>
+      <li class="${validToClass}"><strong>Valid To</strong>: ${p.validTo || "-"}</li>
     </ul>
 
     <h3>Key</h3>
