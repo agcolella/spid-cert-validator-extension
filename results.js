@@ -13,12 +13,17 @@ function renderSummary(result) {
     return;
   }
 
-  const status = result.ok ? "COMPLIANT" : "NON COMPLIANT";
+  const isOk = !!result.ok;
+  const statusText = isOk ? "COMPLIANT" : "NON COMPLIANT";
+  const statusClass = isOk ? "status-ok" : "status-ko";
+
   summaryEl.innerHTML = `
-    <p><strong>Stato:</strong> ${status}</p>
-    <p><strong>Settore:</strong> ${result.sector}</p>
-    <p><strong>Timestamp:</strong> ${result.timestamp || "-"}</p>
-    ${result.error ? `<p><strong>Errore:</strong> ${result.error}</p>` : ""}
+    <div class="status-box ${statusClass}">
+      <p><strong>Stato:</strong> ${statusText}</p>
+      <p><strong>Settore:</strong> ${result.sector}</p>
+      <p><strong>Timestamp:</strong> ${result.timestamp || "-"}</p>
+      ${result.error ? `<p><strong>Errore:</strong> ${result.error}</p>` : ""}
+    </div>
   `;
 }
 
