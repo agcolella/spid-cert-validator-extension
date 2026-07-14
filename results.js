@@ -8,21 +8,34 @@ async function loadLastValidation() {
 
 function renderSummary(result) {
   const summaryEl = document.getElementById("summary");
+
   if (!result) {
-    summaryEl.textContent = "Nessun risultato di validazione disponibile.";
+    summaryEl.innerHTML = `
+      <p class="muted">Nessun risultato di validazione disponibile.</p>
+    `;
     return;
   }
 
   const isOk = !!result.ok;
   const statusText = isOk ? "COMPLIANT" : "NON COMPLIANT";
-  const statusClass = isOk ? "status-ok" : "status-ko";
+  const statusClass = isOk ? "status-ok" : "status-error";
 
   summaryEl.innerHTML = `
-    <div class="status-box ${statusClass}">
-      <p><strong>Stato:</strong> ${statusText}</p>
-      <p><strong>Settore:</strong> ${result.sector}</p>
-      <p><strong>Timestamp:</strong> ${result.timestamp || "-"}</p>
-      ${result.error ? `<p><strong>Errore:</strong> ${result.error}</p>` : ""}
+    <div class="section-grid">
+      <div>
+        <span class="${statusClass}">${statusText}</span>
+        <p class="muted">
+          <strong>Settore:</strong> ${result.sector}
+        </p>
+        <p class="muted">
+          <strong>Timestamp:</strong> ${result.timestamp || "-"}
+        </p>
+        ${
+          result.error
+            ? `<p class="error"><strong>Errore:</strong> ${result.error}</p>`
+            : ""
+        }
+      </div>
     </div>
   `;
 }
@@ -32,7 +45,9 @@ function renderProperties(result) {
   propsEl.innerHTML = "";
 
   if (!result || !result.properties) {
-    propsEl.textContent = "Nessuna proprietà disponibile.";
+    propsEl.innerHTML = `
+      <p class="muted">Nessuna proprietà disponibile.</p>
+    `;
     return;
   }
 
@@ -54,15 +69,17 @@ function renderProperties(result) {
       // già scaduto
       validToClass = "validity-expired";
       expiryWarningHtml = `
-        <p class="expiry-expired">
+        <p class="error">
           <strong>Certificato SCADUTO:</strong> la data di fine validità è già trascorsa.
         </p>
       `;
     } else if (diffDays < 30) {
       const daysRounded = Math.ceil(diffDays);
       expiryWarningHtml = `
-        <p class="expiry-warning">
-          <strong>Scadenza imminente:</strong> il certificato scade tra ${daysRounded} giorno${daysRounded === 1 ? "" : "i"}.
+        <p class="muted">
+          <strong>Scadenza imminente:</strong> il certificato scade tra ${daysRounded} giorno${
+        daysRounded === 1 ? "" : "i"
+      }.
         </p>
       `;
     }
@@ -71,51 +88,74 @@ function renderProperties(result) {
   propsEl.innerHTML = `
     ${expiryWarningHtml}
 
-    <h3>Subject</h3>
-    <ul>
-      <li><strong>CN</strong>: ${subject.commonName || "-"}</li>
-      <li><strong>O</strong>: ${subject.organization || "-"}</li>
-      <li><strong>L</strong>: ${subject.locality || "-"}</li>
-      <li><strong>C</strong>: ${subject.country || "-"}</li>
-      <li><strong>organizationIdentifier</strong>: ${subject.organizationIdentifier || "-"}</li>
-    </ul>
+    <div class="section-grid two-cols">
+      <div class="card">
+        <h3>Subject</h3>
+        <ul>
+          <li><strong>CN</strong>: ${subject.commonName || "-"}</li>
+          <li><strong>O</strong>: ${subject.organization || "-"}</li>
+          <li><strong>L</strong>: ${subject.locality || "-"}</li>
+          <li><strong>C</strong>: ${subject.country || "-"}</li>
+          <li><strong>organizationIdentifier</strong>: ${
+            subject.organizationIdentifier || "-"
+          }</li>
+        </ul>
+      </div>
 
-    <h3>Issuer</h3>
-    <ul>
-      <li><strong>emailAddress</strong>: ${issuer.emailAddress || "-"}</li>
-      <li><strong>CN</strong>: ${issuer.commonName || "-"}</li>
-      <li><strong>OU</strong>: ${issuer.organizationalUnit || "-"}</li>
-      <li><strong>O</strong>: ${issuer.organization || "-"}</li>
-      <li><strong>L</strong>: ${issuer.locality || "-"}</li>
-      <li><strong>C</strong>: ${issuer.country || "-"}</li>
-      <li><strong>serialNumber</strong>: ${issuer.serialNumber || "-"}</li>
-    </ul>
+      <div class="card">
+        <h3>Issuer</h3>
+        <ul>
+          <li><strong>emailAddress</strong>: ${issuer.emailAddress || "-"}</li>
+          <li><strong>CN</strong>: ${issuer.commonName || "-"}</li>
+          <li><strong>OU</strong>: ${issuer.organizationalUnit || "-"}</li>
+          <li><strong>O</strong>: ${issuer.organization || "-"}</li>
+          <li><strong>L</strong>: ${issuer.locality || "-"}</li>
+          <li><strong>C</strong>: ${issuer.country || "-"}</li>
+          <li><strong>serialNumber</strong>: ${issuer.serialNumber || "-"}</li>
+        </ul>
+      </div>
+    </div>
 
-    <h3>Validity</h3>
-    <ul>
-      <li><strong>Valid From</strong>: ${p.validFrom || "-"}</li>
-      <li class="${validToClass}"><strong>Valid To</strong>: ${p.validTo || "-"}</li>
-    </ul>
+    <div class="section-grid">
+      <div class="card">
+        <h3>Validity</h3>
+        <ul>
+          <li><strong>Valid From</strong>: ${p.validFrom || "-"}</li>
+          <li class="${validToClass}">
+            <strong>Valid To</strong>: ${p.validTo || "-"}
+          </li>
+        </ul>
+      </div>
 
-    <h3>Key</h3>
-    <ul>
-      <li><strong>Key Size</strong>: ${p.keySize || "-"}</li>
-      <li><strong>Key Algorithm</strong>: ${p.keyAlgorithm || "-"}</li>
-    </ul>
+      <div class="card">
+        <h3>Key</h3>
+        <ul>
+          <li><strong>Key Size</strong>: ${p.keySize || "-"}</li>
+          <li><strong>Key Algorithm</strong>: ${p.keyAlgorithm || "-"}</li>
+        </ul>
+      </div>
 
-    <h3>Signature</h3>
-    <ul>
-      <li><strong>Sig. Algorithm</strong>: ${p.signatureAlgorithm || "-"}</li>
-      <li><strong>Serial Number</strong>: ${p.serialNumber || "-"}</li>
-    </ul>
+      <div class="card">
+        <h3>Signature</h3>
+        <ul>
+          <li><strong>Sig. Algorithm</strong>: ${
+            p.signatureAlgorithm || "-"
+          }</li>
+          <li><strong>Serial Number</strong>: ${p.serialNumber || "-"}</li>
+        </ul>
+      </div>
+    </div>
   `;
 }
+
 function renderDetails(result) {
   const detailsEl = document.getElementById("details");
   detailsEl.innerHTML = "";
 
   if (!result || !Array.isArray(result.checks) || result.checks.length === 0) {
-    detailsEl.textContent = "Nessun dettaglio disponibile.";
+    detailsEl.innerHTML = `
+      <p class="muted">Nessun dettaglio disponibile.</p>
+    `;
     return;
   }
 
@@ -145,7 +185,11 @@ function renderDetails(result) {
             <strong>${sub.name}</strong> - ${subStatusText}
           </span>
           ${sub.message ? `: ${sub.message}` : ""}
-          ${sub.docUrl ? ` (<a href="${sub.docUrl}" target="_blank">norma</a>)` : ""}
+          ${
+            sub.docUrl
+              ? ` (<a href="${sub.docUrl}" target="_blank">norma</a>)`
+              : ""
+          }
         `;
         subList.appendChild(subLi);
       });
@@ -160,7 +204,10 @@ function renderDetails(result) {
 
 function renderRawOutput(result) {
   const rawEl = document.getElementById("rawOutput");
-  rawEl.textContent = result && result.rawOutput ? result.rawOutput : "";
+  rawEl.textContent =
+    result && typeof result.rawOutput === "string"
+      ? result.rawOutput
+      : "Nessun output grezzo disponibile.";
 }
 
 document.addEventListener("DOMContentLoaded", async () => {

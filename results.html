@@ -7,16 +7,34 @@
 </head>
 <body>
   <h1>Esito validazione certificato SPID</h1>
-  <div id="summary"></div>
 
-  <h2>Certificate Properties</h2>
-  <div id="properties"></div>
+  <details class="result-accordion" name="result-sections" open>
+    <summary>Riepilogo esito</summary>
+    <div class="accordion-content">
+      <div id="summary"></div>
+    </div>
+  </details>
 
-  <h2>Validation Checks</h2>
-  <div id="details"></div>
+  <details class="result-accordion" name="result-sections">
+    <summary>Certificate Properties</summary>
+    <div class="accordion-content">
+      <div id="properties"></div>
+    </div>
+  </details>
 
-  <h2>Raw Validator Output</h2>
-  <pre id="rawOutput"></pre>
+  <details class="result-accordion" name="result-sections">
+    <summary>Validation Checks</summary>
+    <div class="accordion-content">
+      <div id="details"></div>
+    </div>
+  </details>
+
+  <details class="result-accordion" name="result-sections">
+    <summary>Raw Validator Output</summary>
+    <div class="accordion-content">
+      <pre id="rawOutput"></pre>
+    </div>
+  </details>
 
   <script src="results.js"></script>
 </body>
