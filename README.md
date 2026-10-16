@@ -1,4 +1,4 @@
-# SPID Certificate Validator Chrome Extension
+# SPID Certificate Validator Chrome extension
 
 Estensione Chrome sviluppata da @agcolella che consente di selezionare un
 certificato X.509 (PEM o Base64), cliccare con il tasto destro su "Validate"
